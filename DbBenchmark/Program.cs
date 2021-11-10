@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Threading;
+using DbBenchmark.Benchmarking;
 
 namespace DbBenchmark
 {
@@ -6,7 +9,12 @@ namespace DbBenchmark
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var baseDir = Path.GetFullPath(@"..\..\..\");
+            var configFilePath = Path.Join(baseDir, @"Benchmarking\files\queries.txt");
+            var config = BenchmarkConfig.ReadConfigFile(configFilePath);
+            // new Benchmark(config.WithThreadCount(6)).Run();
+            
+            Console.WriteLine(@"Finished");
         }
     }
 }

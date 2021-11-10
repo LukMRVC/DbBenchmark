@@ -1,0 +1,7 @@
+﻿// Parameters:
+// - Parameter 1: Table object in the class Database
+// - Parameter 2: Method name
+// - Parameter 3: The number of parameters followed by data types of parameters
+// - Last parameter: The number of queries send to the database
+PaperVersion Select 0 500
+FileType Select 1 int 500
