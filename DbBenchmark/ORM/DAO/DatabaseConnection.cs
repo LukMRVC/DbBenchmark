@@ -1,0 +1,128 @@
+﻿using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
+
+namespace DbBenchmark.ORM.DAO
+{
+    public class DatabaseConnection : IDisposable
+    {
+        private NpgsqlConnection Connection { get; set; }
+        private NpgsqlTransaction Transaction { get; set; }
+        public string Language = "en";
+
+        public DatabaseConnection()
+        {
+            Connection = new NpgsqlConnection();
+        }
+
+        public bool Connect(string connectionString)
+        {
+            if (Connection.State != ConnectionState.Open)
+            {
+                Connection.ConnectionString = connectionString;
+                try
+                {
+                    Connection.Open();
+                }
+                catch (NpgsqlException)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool Connect()
+        {
+            if (Connection.State != ConnectionState.Open)
+            {
+                var builder = new ConfigurationBuilder();
+                builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+                var root = builder.Build();
+
+                return Connect(root.GetConnectionString("DefaultConnection"));
+            }
+
+            return true;
+        }
+
+        public void Close()
+        {
+            if (Connection.State != ConnectionState.Closed)
+                Connection.Close();
+        }
+
+        public void BeginTransaction()
+        {
+            Transaction = Connection.BeginTransaction(IsolationLevel.Serializable);
+        }
+
+        public void Commit()
+        {
+            Transaction.Commit();
+            Connection.Close();
+        }
+
+        public void Rollback()
+        {
+            Transaction.Rollback();
+        }
+
+        public int Execute(NpgsqlCommand command)
+        {
+            var rowNumber = 0;
+            try
+            {
+                rowNumber = command.ExecuteNonQuery();
+            }
+            catch (NpgsqlException e)
+            {
+                throw e;
+            }
+
+            return rowNumber;
+        }
+
+        public NpgsqlCommand Command(string command)
+        {
+            var com = new NpgsqlCommand(command, Connection);
+
+            if (Transaction != null)
+            {
+                com.Transaction = Transaction;
+            }
+
+            return com;
+        }
+
+        public NpgsqlCommand AssignTransaction(NpgsqlCommand command)
+        {
+            if (Transaction != null)
+            {
+                command.Transaction = Transaction;
+            }
+
+            return command;
+        }
+
+        public NpgsqlDataReader Select(NpgsqlCommand command)
+        {
+            return command.ExecuteReader();
+        }
+
+        public void Dispose()
+        {
+            if (Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
+
+            Connection?.Dispose();
+            Transaction?.Dispose();
+        }
+    }
+}
