@@ -28,6 +28,11 @@ namespace DbBenchmark.Benchmarking
                 {
                     var queryParams = line.Split(' ');
                     var lst = new List<string>(queryParams);
+                    if (!queryParams[0].EndsWith("Table"))
+                    {
+                        queryParams[0] += "Table";
+                    }
+                    
                     testQueries.Add(
                         new TestQuery(
                             queryParams[0],

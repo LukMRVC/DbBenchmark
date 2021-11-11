@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Threading;
 using DbBenchmark.ORM.DAO;
 
@@ -20,6 +22,7 @@ namespace DbBenchmark.Benchmarking
 
         public void Run()
         {
+            var parameterGenerator = new FakeParameterGenerator();
             var random = new Random();
             int i = 0;
             while (i < 5_000)
@@ -37,8 +40,19 @@ namespace DbBenchmark.Benchmarking
                     _testQueries[idx].Inc();
                     Console.WriteLine($"Incrementing on IDX {idx}, Thread: {_id}, currentValue: {_testQueries[idx].Executed}");
                 }
-                // TODO: Get class, method and params to execute the query on
-                // TODO: Execute query outside of lock block, otherwise the requests wouldn't be actually concurrent
+
+                // TODO: Generate params
+                var dictOfParams = parameterGenerator.GenerateParams(_testQueries[idx].Params);
+                var args = new object[dictOfParams.Count];
+                dictOfParams.Values.CopyTo(args, 0);
+                // TODO: Fix this, add DatabaseConnection Type and `ignoreRelation` 
+                var types = new List<Type>();
+                foreach (var methodVal in args)
+                {
+                    types.Add(methodVal.GetType());
+                }
+                var dbObject = "DbBenchmark.ORM.DAO" + _testQueries[idx].DbObject;
+                Type.GetType(dbObject)?.GetMethod(_testQueries[idx].Method, types.ToArray()).Invoke(null, args);
 
                 if (ShouldFinish())
                 {
