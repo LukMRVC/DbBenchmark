@@ -11,8 +11,12 @@ namespace DbBenchmark.ORM.DAO
     {
         private static readonly string TableName = "dais.call_detail_record";
 
-        //funkce 5.3
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName}";
+        
+        // funkce 5.3
+        private static readonly string SQL_SELECT_PARTICIPANT =
+            $"SELECT * FROM {TableName} WHERE number_id IN (SELECT number_id " +
+            $"FROM voip_number WHERE participant_id=@participant";
 
         //funkce 5.4
         private static readonly string SQL_SELECT_ID = $"SELECT * FROM {TableName} WHERE call_id=@call_id";
@@ -77,7 +81,6 @@ namespace DbBenchmark.ORM.DAO
             return ret;
         }
 
-        //funkce 5.3
         public static Collection<CallDetailRecord> Select(bool relationIgnore = false,
             DatabaseConnection connection = null)
         {
@@ -156,6 +159,29 @@ namespace DbBenchmark.ORM.DAO
             reader.Close();
             if (connection == null)
                 db.Close();
+            return callDetailRecords;
+        }
+
+        public static Collection<CallDetailRecord> SelectForParticipant(Participant participant, DatabaseConnection db = null)
+        {
+            DatabaseConnection connection;
+            if (db == null)
+            {
+                connection = new DatabaseConnection();
+            }
+            else
+            {
+                connection = db;
+            }
+
+            connection.Connect();
+            var command = db.Command(SQL_SELECT_PARTICIPANT);
+            command.Parameters.AddWithValue("@participant", participant.Id);
+            var reader = db.Select(command);
+            var callDetailRecords = Read(reader, true);
+            reader.Close();
+            if (db == null)
+                connection.Close();
             return callDetailRecords;
         }
 

@@ -13,6 +13,10 @@ namespace DbBenchmark.ORM.DAO
 
         //funkce 7.3
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName}";
+        
+        //funkce 7.3
+        private static readonly string SQL_SELECT_PAGED = $"SELECT * FROM {TableName} OFFSET @offset FETCH NEXT @psize ROWS ONLY";
+        
         private static readonly string SQL_SELECT_ID = $"SELECT * FROM {TableName} WHERE invoice_number=@number";
 
         //funkce 7.1
@@ -188,11 +192,35 @@ namespace DbBenchmark.ORM.DAO
             }
 
             db.Connect();
-
             var command = db.Command(SQL_SELECT);
             var reader = db.Select(command);
-
             Collection<Invoice> invoices = Read(reader, relationIgnore);
+            reader.Close();
+            if (connection == null)
+                db.Close();
+            return invoices;
+        }
+
+        public static Collection<Invoice> SelectPaged(int page = 0, int pageSize = 50,
+            DatabaseConnection connection = null)
+        {
+            DatabaseConnection db;
+            if (connection == null)
+            {
+                db = new DatabaseConnection();
+            }
+            else
+            {
+                db = connection;
+            }
+
+            db.Connect();
+            var offset = pageSize * (page - 1);
+            var command = db.Command(SQL_SELECT_PAGED);
+            command.Parameters.AddWithValue("@psize", pageSize);
+            command.Parameters.AddWithValue("@offset", offset);
+            var reader = db.Select(command);
+            Collection<Invoice> invoices = Read(reader, true);
             reader.Close();
             if (connection == null)
                 db.Close();

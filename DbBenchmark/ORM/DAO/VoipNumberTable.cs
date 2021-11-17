@@ -33,6 +33,11 @@ namespace DbBenchmark.ORM.DAO
             $" current_state=@current_state, foreign_block=@foreign_block, quarantine_until=@quarantine_until, " +
             $" activated=@activated WHERE number_id=@number_id";
 
+        // funkce 4.5
+        private static readonly string SQL_QUARANTINE =
+            $@"UPDATE {TableName} SET participant_id=NULL, current_state=0, activated_at=NULL, quarantine_until=" +
+            $"current_timestamp + INTERVAL '6 MONTHS' WHERE participant_id=@participant_id";
+
         private static readonly string SQL_LAST_ID = $"SELECT MAX(number_id) FROM {TableName}";
 
         public static void PrepareCommand(NpgsqlCommand command, VoipNumber voipNumber)
@@ -108,9 +113,25 @@ namespace DbBenchmark.ORM.DAO
         //funkce 4.5
         public static int NumberRemoval(VoipNumber voipNumber, DatabaseConnection connection = null)
         {
+            DatabaseConnection db;
+            if (connection == null)
+            {
+                db = new DatabaseConnection();
+            }
+            else
+            {
+                db = connection;
+            }
+
+            db.Connect();
+            var command = db.Command(SQL_QUARANTINE);
+            PrepareCommand(command, voipNumber);
+            int ret = db.Execute(command);
+            if (connection == null)
+                db.Close();
             voipNumber.Participant = null;
             voipNumber.ParticipantId = null;
-            return Update(voipNumber, connection);
+            return ret;
         }
 
         //funkce 4.2

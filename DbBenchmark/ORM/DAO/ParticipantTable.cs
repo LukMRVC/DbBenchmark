@@ -28,8 +28,10 @@ namespace DbBenchmark.ORM.DAO
 
         //funkce 10.4
         private static readonly string SQL_CALLS_COST =
-            $"SELECT dais.calcParticipantCallCost(@participant_id, @start, @end) AS calls_cost";
+            @"SELECT dais.calcParticipantCallCost(@participant_id, @start, @end) AS calls_cost";
 
+        // private static readonly string SQL_SELECT_OTHER =
+        //     @"SELECT "
 
         //funkce 3.4
         private static readonly string SQL_SELECT_CONTRACT =
