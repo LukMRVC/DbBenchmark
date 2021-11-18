@@ -9,21 +9,21 @@ namespace DbBenchmark.ORM.DAO
 {
     public class CallDetailRecordTable
     {
-        private static readonly string TableName = "dais.call_detail_record";
+        private static readonly string TableName = "call_detail_record";
 
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName}";
         
         // funkce 5.3
         private static readonly string SQL_SELECT_PARTICIPANT =
             $"SELECT * FROM {TableName} WHERE number_id IN (SELECT number_id " +
-            $"FROM voip_number WHERE participant_id=@participant";
+            $"FROM voip_number WHERE participant_id=@participant)";
 
         //funkce 5.4
         private static readonly string SQL_SELECT_ID = $"SELECT * FROM {TableName} WHERE call_id=@call_id";
 
         //funkce 5.1
         private static readonly string SQL_INSERT =
-            $"EXEC dais.AddCallDetailRecord @sourceNum, @destNum, @callDate, @length, @disposition";
+            $"EXEC AddCallDetailRecord @sourceNum, @destNum, @callDate, @length, @disposition";
 
         //funkce 5.2
         private static readonly string SQL_UPDATE =
@@ -176,7 +176,7 @@ namespace DbBenchmark.ORM.DAO
 
             connection.Connect();
             var command = db.Command(SQL_SELECT_PARTICIPANT);
-            command.Parameters.AddWithValue("@participant", participant.Id);
+            command.Parameters.AddWithValue("participant", participant.Id);
             var reader = db.Select(command);
             var callDetailRecords = Read(reader, true);
             reader.Close();
@@ -215,7 +215,7 @@ namespace DbBenchmark.ORM.DAO
             while (reader.Read())
             {
                 CallDetailRecord record = new CallDetailRecord();
-                record.Id = (long) reader["call_id"];
+                record.Id = (int) reader["call_id"];
                 record.Disposition = (string) reader["disposition"];
                 record.SourceNum = (string) reader["source_num"];
                 record.DestinationNum = (string) reader["destination_num"];

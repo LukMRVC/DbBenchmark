@@ -43,12 +43,11 @@ namespace DbBenchmark.Benchmarking
                 }
 
                 var generatedParams = parameterGenerator.GenerateParams(_testQueries[idx].Params);
-                
-                // TODO: Fix this, add DatabaseConnection Type and `relationIgnore` 
+                var paramsToExecute = new List<object>();
                 var types = new List<Type>();
                 var dbObject = "DbBenchmark.ORM.DAO." + _testQueries[idx].DbObject;
                 var methods = Type.GetType(dbObject)?.GetMethods();
-                MethodInfo methodToExecute;
+                MethodInfo methodToExecute = null;
                 foreach (var methodInfo in methods)
                 {
                     if (methodInfo.Name == _testQueries[idx].Method)
@@ -57,18 +56,19 @@ namespace DbBenchmark.Benchmarking
                         var paramCount = 0;
                         foreach (var parameterInfo in args)
                         {
-                            // TODO: Somehow deal with this...
                             types.Add(parameterInfo.GetType());
                             switch (parameterInfo.Name.ToLower())
                             {
                                 case "db":
                                 case "connection":
-                                    generatedParams = new List<object>(generatedParams).Add(_conn);
+                                    paramsToExecute.Add(_conn);
                                     continue;
                                     
                                 case "relationignore":
+                                    paramsToExecute.Add(true);
                                     continue;
                                 default:
+                                    paramsToExecute.Add(generatedParams[paramCount]);
                                     paramCount += 1;
                                     break;
                             }
@@ -79,11 +79,20 @@ namespace DbBenchmark.Benchmarking
                             methodToExecute = methodInfo;
                             break;
                         }
+                        // if it is not the method I want to Invoke, clear params and types
+                        paramsToExecute.Clear();
                         types.Clear();
                     }
                 }
-                
-                Type.GetType(dbObject)?.GetMethod(_testQueries[idx].Method, types.ToArray()).Invoke(null, generatedParams);
+
+                if (methodToExecute == null)
+                {
+                    throw new System.Exception(@"Could not find method to Invoke");
+                }
+                else
+                {
+                    methodToExecute.Invoke(null, paramsToExecute.ToArray());
+                }
 
                 if (ShouldFinish())
                 {

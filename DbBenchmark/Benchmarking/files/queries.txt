@@ -11,9 +11,11 @@
 // operace 3.2.5 UPDATE voip_number SET participant_id=NULL, current_state=0, activated=NULL, quarantine_until= (current_timestamp + INTERVAL ‘6 MONTH‘) WHERE participant_id=$participant_id
 //
 // operace 3.4 SELECT * from participant where contract_id
-Participant SelectForContract 1 Contract 500
+// TODO: Uncomment
+//Participant SelectForContract 1 Contract 500
 // operace 4.5 UPDATE voip_number set participant_id=NULL, current_state=0, activated_at=NULL, quarantine_until=current_timestamp +  INTERVAL ‘6 MONTHS‘ where participant_id=…
-VoipNumber NumberRemoval 1 VoipNumber 300
+// TODO: Uncomment
+//VoipNumber NumberRemoval 1 VoipNumber 300
 // operace 5.1.6 INSERT INTO call_detail_record(disposition, source_num, destination_num, length, call_date, number_id, incoming_outgoing, price_list_id) VALUES($disposition, $source_num, $dest_num, $length, $call_date, $number_id, $incoming_outgoing, $price_list_id)
 //
 // operace 5.3 SELECT * from call_detail_record where number_id IN (select number_id from voip_number where participant_id=…)
