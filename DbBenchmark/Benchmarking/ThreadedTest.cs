@@ -39,7 +39,7 @@ namespace DbBenchmark.Benchmarking
                 lock (_testQueries)
                 {
                     _testQueries[idx].Inc();
-                    Console.WriteLine($"Incrementing on IDX {idx}, Thread: {_id}, currentValue: {_testQueries[idx].Executed}");
+                    Console.WriteLine($"T{_id}: Picked {_testQueries[idx].DbObject} {_testQueries[idx].Method} {_testQueries[idx].Params.Length}");
                 }
 
                 var generatedParams = parameterGenerator.GenerateParams(_testQueries[idx].Params);
@@ -56,7 +56,20 @@ namespace DbBenchmark.Benchmarking
                         var paramCount = 0;
                         foreach (var parameterInfo in args)
                         {
+
                             types.Add(parameterInfo.GetType());
+                            if (parameterInfo.Name.Equals("page", StringComparison.OrdinalIgnoreCase))
+                            {
+                                paramsToExecute.Add(random.Next(10_000));
+                                continue;
+                            }
+                            
+                            if (parameterInfo.Name.Equals("pagesize", StringComparison.OrdinalIgnoreCase))
+                            {
+                                paramsToExecute.Add(50);
+                                continue;
+                            }
+                            
                             switch (parameterInfo.Name.ToLower())
                             {
                                 case "db":
@@ -91,7 +104,15 @@ namespace DbBenchmark.Benchmarking
                 }
                 else
                 {
-                    methodToExecute.Invoke(null, paramsToExecute.ToArray());
+                    try
+                    {
+                        methodToExecute.Invoke(null, paramsToExecute.ToArray());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Thread {_id} failed with exception: {e.Message} {e.StackTrace}");
+                        throw;
+                    }
                 }
 
                 if (ShouldFinish())

@@ -8,7 +8,7 @@ namespace DbBenchmark.ORM.DAO
 {
     public class NumberRequestTable
     {
-        private static readonly string TableName = "dais.number_request";
+        private static readonly string TableName = "number_request";
 
         //funkce 9.3
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName}";
@@ -35,7 +35,7 @@ namespace DbBenchmark.ORM.DAO
                                                     $"WHERE participant_id=@participant_id AND number_id=@number_id";
 
         //funkce 10.3
-        private static readonly string SQL_RESOLVE_REQUEST = $"EXEC dais.ResolveNumberRequests";
+        private static readonly string SQL_RESOLVE_REQUEST = $"EXEC ResolveNumberRequests";
 
 
         //funkce 9.1

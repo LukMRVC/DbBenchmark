@@ -9,7 +9,7 @@ namespace DbBenchmark.ORM.DAO
 {
     public class ParticipantTable
     {
-        private static readonly string TableName = "dais.participant";
+        private static readonly string TableName = "participant";
 
         //funkce 3.4
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName} WHERE deleted_at IS NULL";
@@ -28,7 +28,7 @@ namespace DbBenchmark.ORM.DAO
 
         //funkce 10.4
         private static readonly string SQL_CALLS_COST =
-            @"SELECT dais.calcParticipantCallCost(@participant_id, @start, @end) AS calls_cost";
+            @"SELECT calcParticipantCallCost(@participant_id, @start, @end) AS calls_cost";
 
         // private static readonly string SQL_SELECT_OTHER =
         //     @"SELECT "
@@ -238,7 +238,7 @@ namespace DbBenchmark.ORM.DAO
             db.Connect();
 
             var command = db.Command(SQL_SELECT_CONTRACT);
-            command.Parameters.AddWithValue("@contract_id", contract.Id);
+            command.Parameters.AddWithValue("contract_id", contract.Id);
             var reader = db.Select(command);
 
             Collection<Participant> participants = Read(reader, true);
@@ -287,7 +287,7 @@ namespace DbBenchmark.ORM.DAO
                 Participant participant = new Participant();
                 participant.Id = (int) reader["participant_id"];
                 participant.Name = (string) reader["name"];
-                participant.AccessLevel = (byte) reader["access_level"];
+                participant.AccessLevel = (short) reader["access_level"];
                 participant.ContractId = (int) reader["contract_id"];
                 if (!relationIgnore)
                 {

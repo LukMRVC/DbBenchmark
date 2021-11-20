@@ -32,7 +32,7 @@ namespace DbBenchmark.ORM.DTO
             set
             {
                 _participant = value;
-                ParticipantId = value.Id;
+                ParticipantId = value?.Id;
             }
         }
 

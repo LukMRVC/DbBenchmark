@@ -9,7 +9,7 @@ namespace DbBenchmark.ORM.DAO
 {
     public class VoipNumberTable
     {
-        private static readonly string TableName = "dais.voip_number";
+        private static readonly string TableName = "voip_number";
 
         //funkce 4.4
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName} WHERE deleted_at IS NULL";
@@ -35,22 +35,22 @@ namespace DbBenchmark.ORM.DAO
 
         // funkce 4.5
         private static readonly string SQL_QUARANTINE =
-            $@"UPDATE {TableName} SET participant_id=NULL, current_state=0, activated_at=NULL, quarantine_until=" +
+            $@"UPDATE {TableName} SET participant_id=NULL, current_state=0, activated=NULL, quarantine_until=" +
             $"current_timestamp + INTERVAL '6 MONTHS' WHERE participant_id=@participant_id";
 
         private static readonly string SQL_LAST_ID = $"SELECT MAX(number_id) FROM {TableName}";
 
         public static void PrepareCommand(NpgsqlCommand command, VoipNumber voipNumber)
         {
-            command.Parameters.AddWithValue("@number_id", voipNumber.Id);
-            command.Parameters.AddWithValue("@pcc", voipNumber.PhoneCountryCode);
-            command.Parameters.AddWithValue("@number", voipNumber.Number);
-            command.Parameters.AddWithValue("@current_state", voipNumber.CurrentState);
-            command.Parameters.AddWithValue("@foreign_block", voipNumber.ForeignBlock);
-            command.Parameters.AddWithValue("@quarantine_until", (object) voipNumber.QuarantineUntil ?? DBNull.Value);
-            command.Parameters.AddWithValue("@activated", (object) voipNumber.Activated ?? DBNull.Value);
-            command.Parameters.AddWithValue("@password", voipNumber.Password);
-            command.Parameters.AddWithValue("@participant_id",
+            command.Parameters.AddWithValue("number_id", voipNumber.Id);
+            command.Parameters.AddWithValue("pcc", voipNumber.PhoneCountryCode);
+            command.Parameters.AddWithValue("number", voipNumber.Number);
+            command.Parameters.AddWithValue("current_state", voipNumber.CurrentState);
+            command.Parameters.AddWithValue("foreign_block", voipNumber.ForeignBlock);
+            command.Parameters.AddWithValue("quarantine_until", (object) voipNumber.QuarantineUntil ?? DBNull.Value);
+            command.Parameters.AddWithValue("activated", (object) voipNumber.Activated ?? DBNull.Value);
+            command.Parameters.AddWithValue("password", voipNumber.Password);
+            command.Parameters.AddWithValue("participant_id",
                 voipNumber.ParticipantId.HasValue ? (object) voipNumber.ParticipantId.Value : DBNull.Value);
         }
 

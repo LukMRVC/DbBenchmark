@@ -9,7 +9,7 @@ namespace DbBenchmark.ORM.DAO
 {
     public class InvoiceTable
     {
-        private static readonly string TableName = "dais.invoice";
+        private static readonly string TableName = "invoice";
 
         //funkce 7.3
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName}";
@@ -31,7 +31,7 @@ namespace DbBenchmark.ORM.DAO
         private static readonly string SQL_MAX_NUMBER = $"SELECT MAX(invoice_number) FROM {TableName}";
 
         private static readonly string SQL_SELECT_CONTRACT = $"SELECT * FROM {TableName} WHERE contract_id=@contract";
-        private static readonly string SQL_MONTHLY_INVOICE = $"EXEC dais.MonthlyInvoice";
+        private static readonly string SQL_MONTHLY_INVOICE = $"EXEC MonthlyInvoice";
 
 
         //funkce 10.2
@@ -217,8 +217,8 @@ namespace DbBenchmark.ORM.DAO
             db.Connect();
             var offset = pageSize * (page - 1);
             var command = db.Command(SQL_SELECT_PAGED);
-            command.Parameters.AddWithValue("@psize", pageSize);
-            command.Parameters.AddWithValue("@offset", offset);
+            command.Parameters.AddWithValue("psize", pageSize);
+            command.Parameters.AddWithValue("offset", offset);
             var reader = db.Select(command);
             Collection<Invoice> invoices = Read(reader, true);
             reader.Close();

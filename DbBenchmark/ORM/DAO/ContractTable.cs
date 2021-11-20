@@ -10,7 +10,7 @@ namespace DbBenchmark.ORM.DAO
 {
     public class ContractTable
     {
-        private static readonly string TableName = "dais.contract";
+        private static readonly string TableName = "contract";
 
         //funkce 1.5
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName} WHERE deleted_at IS NULL";

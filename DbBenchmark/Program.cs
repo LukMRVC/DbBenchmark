@@ -13,10 +13,8 @@ namespace DbBenchmark
             var baseDir = Path.GetFullPath(@"..\..\..\");
             var configFilePath = Path.Join(baseDir, @"Benchmarking\files\queries.txt");
             var config = BenchmarkConfig.ReadConfigFile(configFilePath);
-            // new Benchmark(config.WithThreadCount(1)).Run();
-            // Console.WriteLine(@"Finished");
-            var tt = new ThreadedTest(1, new DatabaseConnection(), config.TestQueries);
-            tt.Run();
+            new Benchmark(config.WithThreadCount(4)).Run();
+            Console.WriteLine(@"Finished");
         }
     }
 }

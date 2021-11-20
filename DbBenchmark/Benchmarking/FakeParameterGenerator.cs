@@ -70,7 +70,8 @@ namespace DbBenchmark.Benchmarking
                 {
                     skipped--;
                     var val = result[i - skipped];
-                    fields[i].SetValue(instance, val);
+                    if (fields[i].CanWrite)
+                        fields[i].SetValue(instance, val);
                 }
             }
 

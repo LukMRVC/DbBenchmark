@@ -8,7 +8,7 @@ namespace DbBenchmark.ORM.DAO
 {
     public class PriceListTable
     {
-        private static readonly string TableName = "dais.price_list";
+        private static readonly string TableName = "price_list";
 
         //funkce 6.4
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName}";
