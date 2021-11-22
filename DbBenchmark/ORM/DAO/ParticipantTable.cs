@@ -24,7 +24,7 @@ namespace DbBenchmark.ORM.DAO
             $"@password, @balance_limit, CURRENT_TIMESTAMP, NULL)";
 
         //funkce 3.2
-        private static readonly string SQL_DELETE_ID = $"DELETE FROM {TableName} WHERE participant_id=@participant_id";
+        private static readonly string SQL_DELETE_ID = $"CALL remove_participant(@participant_id)";
 
         //funkce 10.4
         private static readonly string SQL_CALLS_COST =

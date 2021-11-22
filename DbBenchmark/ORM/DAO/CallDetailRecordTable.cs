@@ -23,7 +23,7 @@ namespace DbBenchmark.ORM.DAO
 
         //funkce 5.1
         private static readonly string SQL_INSERT =
-            $"EXEC AddCallDetailRecord @sourceNum, @destNum, @callDate, @length, @disposition";
+            $"CALL insert_call (@sourceNum, @destNum, @callDate, @length, @disposition)";
 
         //funkce 5.2
         private static readonly string SQL_UPDATE =
@@ -239,15 +239,15 @@ namespace DbBenchmark.ORM.DAO
 
         public static void PrepareCommand(NpgsqlCommand command, CallDetailRecord callDetailRecord)
         {
-            command.Parameters.AddWithValue("@call_id", callDetailRecord.Id);
-            command.Parameters.AddWithValue("@disposition", callDetailRecord.Disposition);
-            command.Parameters.AddWithValue("@sourceNum", callDetailRecord.SourceNum);
-            command.Parameters.AddWithValue("@destNum", callDetailRecord.DestinationNum);
-            command.Parameters.AddWithValue("@callDate", callDetailRecord.CallDate);
-            command.Parameters.AddWithValue("@length", callDetailRecord.Length);
-            command.Parameters.AddWithValue("@number", callDetailRecord.VoipNumberId);
-            command.Parameters.AddWithValue("@incomingOutgoing", callDetailRecord.IncomingOutgoing);
-            command.Parameters.AddWithValue("@price_list_id", callDetailRecord.PriceListId);
+            command.Parameters.AddWithValue("call_id", callDetailRecord.Id);
+            command.Parameters.AddWithValue("disposition", callDetailRecord.Disposition);
+            command.Parameters.AddWithValue("sourceNum", callDetailRecord.SourceNum);
+            command.Parameters.AddWithValue("destNum", callDetailRecord.DestinationNum);
+            command.Parameters.AddWithValue("callDate", callDetailRecord.CallDate);
+            command.Parameters.AddWithValue("length", callDetailRecord.Length);
+            command.Parameters.AddWithValue("number", callDetailRecord.VoipNumberId);
+            command.Parameters.AddWithValue("incomingOutgoing", callDetailRecord.IncomingOutgoing);
+            command.Parameters.AddWithValue("price_list_id", callDetailRecord.PriceListId);
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Reflection;
 
 namespace DbBenchmark.Benchmarking
 {
@@ -88,12 +86,18 @@ namespace DbBenchmark.Benchmarking
 
             if (@"string".Equals(paramTypeName, StringComparison.OrdinalIgnoreCase))
             {
+                if (paramTypeName.EndsWith("Num", StringComparison.OrdinalIgnoreCase))
+                {
+                    return GenerateParsableNumber(rnd);
+                }
                 return GeneratedString(rnd);
             }
 
             if (@"datetime".Equals(paramTypeName, StringComparison.OrdinalIgnoreCase))
             {
-                return DateTime.Now;
+                var start = new DateTime(2020, 1, 1);
+                int range = (DateTime.Today - start).Days;
+                return start.AddDays(rnd.Next(range));
             }
                 
             if (@"boolean".Equals(paramTypeName, StringComparison.OrdinalIgnoreCase))
@@ -106,6 +110,13 @@ namespace DbBenchmark.Benchmarking
             }
 
             return null;
+        }
+
+        private object GenerateParsableNumber(Random random)
+        {
+            var prefix = random.Next(500).ToString().PadLeft(3, '0');
+            var num = random.Next(500_000_000, 599_999_999);
+            return $"+{prefix}{num}";
         }
     }
 }
