@@ -14,6 +14,10 @@ namespace DbBenchmark.ORM.DAO
 
         //funkce 1.5
         private static readonly string SQL_SELECT = $"SELECT * FROM {TableName} WHERE deleted_at IS NULL";
+        
+        //funkce 1.5
+        private static readonly string SQL_SELECT_PAGED = $"SELECT * FROM {TableName} WHERE deleted_at IS NULL " +
+                                                          $"OFFSET @offset FETCH NEXT @psize ROWS ONLY";
 
         //funkce 1.4
         private static readonly string SQL_SELECT_ID =
@@ -136,11 +140,39 @@ namespace DbBenchmark.ORM.DAO
             var command = db.Command(SQL_SELECT);
             NpgsqlDataReader reader = db.Select(command);
 
-            Collection<Contract> addresses = Read(reader, relationIgnore);
+            Collection<Contract> contracts = Read(reader, relationIgnore);
             reader.Close();
             if (connection == null)
                 db.Close();
-            return addresses;
+            return contracts;
+        }
+        
+        //funkce 1.4
+        public static Collection<Contract> SelectPaged(int page = 0, int pageSize = 50, 
+            bool relationIgnore = false, DatabaseConnection connection = null)
+        {
+            DatabaseConnection db;
+            if (connection == null)
+            {
+                db = new DatabaseConnection();
+            }
+            else
+            {
+                db = connection;
+            }
+
+            db.Connect();
+
+            var command = db.Command(SQL_SELECT_PAGED);
+            var offset = pageSize * (page - 1);
+            command.Parameters.AddWithValue("psize", pageSize);
+            command.Parameters.AddWithValue("offset", offset);
+            NpgsqlDataReader reader = db.Select(command);
+            Collection<Contract> contracts = Read(reader, relationIgnore);
+            reader.Close();
+            if (connection == null)
+                db.Close();
+            return contracts;
         }
 
         //DB trigger, funkce 1.3
@@ -198,7 +230,7 @@ namespace DbBenchmark.ORM.DAO
 
         private static Collection<Contract> Read(NpgsqlDataReader reader, bool relationIgnore)
         {
-            Collection<Contract> addresses = new Collection<Contract>();
+            Collection<Contract> addresses = new();
             while (reader.Read())
             {
                 Contract contract = new Contract();
@@ -207,7 +239,7 @@ namespace DbBenchmark.ORM.DAO
                 contract.ContractName = (string) reader["contract_name"];
                 if (!reader.IsDBNull("identification_number"))
                 {
-                    contract.IdentificationNumber = (long) reader["identification_number"];
+                    contract.IdentificationNumber = (int) reader["identification_number"];
                 }
 
                 if (!reader.IsDBNull("vat_identification_number"))

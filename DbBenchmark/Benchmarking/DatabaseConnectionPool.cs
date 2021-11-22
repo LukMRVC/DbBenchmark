@@ -7,7 +7,7 @@ namespace DbBenchmark.Benchmarking
 
         public DatabaseConnection GetNew()
         {
-            return new DatabaseConnection();
+            return new DatabaseConnection(runEveryInTransaction: true);
         }
     }
 }

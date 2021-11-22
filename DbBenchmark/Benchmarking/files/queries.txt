@@ -12,14 +12,14 @@ Participant SelectForContract 1 Contract 500
 // operace 4.5 UPDATE voip_number set participant_id=NULL, current_state=0, activated_at=NULL, quarantine_until=current_timestamp +  INTERVAL ‘6 MONTHS‘ where participant_id=…
 VoipNumber NumberRemoval 1 VoipNumber 300
 // operace 5.1 INSERT INTO call_detail_record(disposition, source_num, destination_num, length, call_date, number_id, incoming_outgoing, price_list_id) VALUES($disposition, $source_num, $dest_num, $length, $call_date, $number_id, $incoming_outgoing, $price_list_id)
-CallDetailRecord Insert 1 CallDetailRecord
+CallDetailRecord Insert 1 CallDetailRecord 500
 // operace 5.3 SELECT * from call_detail_record where number_id IN (select number_id from voip_number where participant_id=…)
 CallDetailRecord SelectForParticipant 1 Participant 500
 // operace 7.3 SELECT * from invoice
-Invoice SelectPaged 0 200
+Invoice Select 0 200
 // operace 9.4
-NumberRequest ResolveRequests 0 300
+NumberRequest ResolveRequests 0 200
 // operace 1.5 Select * from contract
-Contract Select 0 300
+Contract SelectPaged 0 300
 // operace 10.4 SELECT length, tariffication_first, tariffication_second, price_per_second FROM call_detail_record cdr JOIN price_list ON cdr.price_list_id=price_list.price_list_id WHERE EXISTS(SELECT number_id FROM voip_number WHERE participant_id=$participant_id AND cdr.number_id=voip_number.number_id) AND length > 0 AND call_date >= period_start AND call_date <= period_end
-Participant CalcCallsCost 3 int DateTime DateTime 500
+Participant CalcCallsCost 3 Participant DateTime DateTime 500

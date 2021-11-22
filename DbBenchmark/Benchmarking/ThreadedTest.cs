@@ -26,11 +26,9 @@ namespace DbBenchmark.Benchmarking
             var parameterGenerator = new FakeParameterGenerator();
             var random = new Random();
             int i = 0;
-            while (i < 5_000)
+            while (true)
             {
-                ++i;
                 var idx = random.Next(_testQueries.Length);
-                
                 if (_testQueries[idx].IsDone)
                 {
                     continue;
@@ -112,6 +110,10 @@ namespace DbBenchmark.Benchmarking
                     {
                         Console.WriteLine($"Thread {_id} failed with exception: {e.Message} {e.StackTrace}");
                         throw;
+                    }
+                    finally
+                    {
+                        _conn.Rollback();
                     }
                 }
 

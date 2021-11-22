@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -12,10 +11,17 @@ namespace DbBenchmark.ORM.DAO
         private NpgsqlConnection Connection { get; set; }
         private NpgsqlTransaction Transaction { get; set; }
         public string Language = "en";
-
+        private bool EveryInTransaction = false;
+        
         public DatabaseConnection()
         {
             Connection = new NpgsqlConnection();
+        }
+
+        public DatabaseConnection(bool runEveryInTransaction = false)
+        {
+            Connection = new NpgsqlConnection();
+            EveryInTransaction = runEveryInTransaction;
         }
 
         public bool Connect(string connectionString)
@@ -69,7 +75,7 @@ namespace DbBenchmark.ORM.DAO
 
         public void Rollback()
         {
-            Transaction.Rollback();
+            Transaction?.Rollback();
         }
 
         public int Execute(NpgsqlCommand command)
@@ -89,6 +95,11 @@ namespace DbBenchmark.ORM.DAO
 
         public NpgsqlCommand Command(string command)
         {
+            if (EveryInTransaction)
+            {
+                BeginTransaction();
+            }
+            
             var com = new NpgsqlCommand(command, Connection);
 
             if (Transaction != null)
@@ -116,11 +127,12 @@ namespace DbBenchmark.ORM.DAO
 
         public void Dispose()
         {
+            Transaction?.Rollback();
             if (Connection.State == ConnectionState.Open)
             {
                 Connection.Close();
             }
-
+            
             Connection?.Dispose();
             Transaction?.Dispose();
         }

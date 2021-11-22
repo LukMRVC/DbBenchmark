@@ -35,7 +35,7 @@ namespace DbBenchmark.ORM.DAO
                                                     $"WHERE participant_id=@participant_id AND number_id=@number_id";
 
         //funkce 10.3
-        private static readonly string SQL_RESOLVE_REQUEST = $"EXEC ResolveNumberRequests";
+        private static readonly string SQL_RESOLVE_REQUEST = $"CALL assign_requested_numbers()";
 
 
         //funkce 9.1

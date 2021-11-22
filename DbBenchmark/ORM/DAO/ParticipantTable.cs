@@ -28,7 +28,7 @@ namespace DbBenchmark.ORM.DAO
 
         //funkce 10.4
         private static readonly string SQL_CALLS_COST =
-            @"SELECT calcParticipantCallCost(@participant_id, @start, @end) AS calls_cost";
+            @"SELECT participant_call_cost(@participant_id, @start, @end) AS calls_cost";
 
         // private static readonly string SQL_SELECT_OTHER =
         //     @"SELECT "
@@ -134,7 +134,7 @@ namespace DbBenchmark.ORM.DAO
 
             db.Connect();
             var command = db.Command(SQL_DELETE_ID);
-            command.Parameters.AddWithValue("@participant_id", participant.Id);
+            command.Parameters.AddWithValue("participant_id", participant.Id);
             int ret = db.Execute(command);
             if (connection == null)
                 db.Close();
@@ -202,12 +202,13 @@ namespace DbBenchmark.ORM.DAO
 
             db.Connect();
             if (start > end)
-                throw new Exception("Start date cannot be greater than end date");
-
+            {
+                (start, end) = (end, start);
+            }
             var command = db.Command(SQL_CALLS_COST);
-            command.Parameters.AddWithValue("@participant_id", participant.Id);
-            command.Parameters.AddWithValue("@start", start);
-            command.Parameters.AddWithValue("@end", end);
+            command.Parameters.AddWithValue("participant_id", participant.Id);
+            command.Parameters.AddWithValue("start", start);
+            command.Parameters.AddWithValue("end", end);
             double num = 0;
             using (var reader = db.Select(command))
             {

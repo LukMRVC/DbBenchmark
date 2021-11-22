@@ -30,7 +30,15 @@ namespace DbBenchmark.Benchmarking
                 if (complex != null && depth < 1)
                 {
                     changedIndexes.Add(i);
-                    parameters.Add(GenerateInstanceOf(complex, depth));
+                    var generated = GenerateInstanceOf(complex, depth);
+                    if (generated == null)
+                    {
+                        throw new Exception("Failed to generate complex data type");
+                    }
+                    else
+                    {
+                        parameters.Add(generated);
+                    }
                 }
                 else
                 {
@@ -54,7 +62,7 @@ namespace DbBenchmark.Benchmarking
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public object GenerateInstanceOf(Type complex, int depth)
+        public object? GenerateInstanceOf(Type complex, int depth)
         {
             var fields = complex.GetProperties();
             var changed = new int[] {};
@@ -69,7 +77,13 @@ namespace DbBenchmark.Benchmarking
                     skipped--;
                     var val = result[i - skipped];
                     if (fields[i].CanWrite)
+                    {
+                        if (fields[i].Name.EndsWith("num", StringComparison.OrdinalIgnoreCase))
+                        {
+                            val = GenerateParsableNumber(new Random());
+                        }
                         fields[i].SetValue(instance, val);
+                    }
                 }
             }
 
@@ -86,10 +100,6 @@ namespace DbBenchmark.Benchmarking
 
             if (@"string".Equals(paramTypeName, StringComparison.OrdinalIgnoreCase))
             {
-                if (paramTypeName.EndsWith("Num", StringComparison.OrdinalIgnoreCase))
-                {
-                    return GenerateParsableNumber(rnd);
-                }
                 return GeneratedString(rnd);
             }
 
