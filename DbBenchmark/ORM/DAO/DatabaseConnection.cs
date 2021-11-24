@@ -42,12 +42,23 @@ namespace DbBenchmark.ORM.DAO
             return true;
         }
 
+        private static string GoUpNLevels(int levels, string path)
+        {
+            string newPath = (string) path.Clone();
+            for (int i = 0; i < levels; ++i)
+            {
+                newPath = Path.GetDirectoryName(newPath);
+            }
+
+            return newPath;
+        }
+
         public bool Connect()
         {
             if (Connection.State != ConnectionState.Open)
             {
                 var builder = new ConfigurationBuilder();
-                builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..", "appsettings.json"));
+                builder.AddJsonFile(Path.Combine(GoUpNLevels(3, Path.GetFullPath("./")), "appsettings.json"));
                 var root = builder.Build();
 
                 return Connect(root.GetConnectionString("DefaultConnection"));
