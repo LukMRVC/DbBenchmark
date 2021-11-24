@@ -58,7 +58,7 @@ namespace DbBenchmark.ORM.DAO
             if (Connection.State != ConnectionState.Open)
             {
                 var builder = new ConfigurationBuilder();
-                builder.AddJsonFile(Path.Combine(GoUpNLevels(3, Path.GetFullPath("./")), "appsettings.json"));
+                builder.AddJsonFile(Path.Combine(GoUpNLevels(4, Path.GetFullPath("./")), "appsettings.json"));
                 var root = builder.Build();
 
                 return Connect(root.GetConnectionString("DefaultConnection"));

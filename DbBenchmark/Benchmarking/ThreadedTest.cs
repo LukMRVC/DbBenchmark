@@ -37,8 +37,14 @@ namespace DbBenchmark.Benchmarking
                 lock (_testQueries)
                 {
                     _testQueries[idx].Inc();
-                    Console.WriteLine($"T{_id}: Picked {_testQueries[idx].DbObject} {_testQueries[idx].Method} {_testQueries[idx].Params.Length}");
+                    if (_testQueries[idx].Executed % 10 == 0)
+                    {
+                        Console.WriteLine($"{_testQueries[idx].DbObject} {_testQueries[idx].Method} {_testQueries[idx].Executed}/" +
+                                          $"{_testQueries[idx].ToExecute}");
+                        Console.Out.Flush();
+                    }
                 }
+                
 
                 var generatedParams = parameterGenerator.GenerateParams(_testQueries[idx].Params);
                 var paramsToExecute = new List<object>();
