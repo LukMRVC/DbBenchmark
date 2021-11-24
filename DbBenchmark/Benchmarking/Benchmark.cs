@@ -50,6 +50,7 @@ namespace DbBenchmark.Benchmarking
             }
             
             Console.WriteLine($"Executed {totalExecuted} ops, elapsed time: {stopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"Total throughput is {(float)totalExecuted / stopwatch.Elapsed.Seconds:F2}ops/s");
             stopwatch.Stop();
         }
     }

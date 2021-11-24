@@ -37,6 +37,7 @@ namespace DbBenchmark.Benchmarking
                 lock (_testQueries)
                 {
                     _testQueries[idx].Inc();
+                    Console.WriteLine($"T{_id}: Picked {_testQueries[idx].DbObject} {_testQueries[idx].Method}");
                     if (_testQueries[idx].Executed % 10 == 0)
                     {
                         Console.WriteLine($"{_testQueries[idx].DbObject} {_testQueries[idx].Method} {_testQueries[idx].Executed}/" +
@@ -114,7 +115,9 @@ namespace DbBenchmark.Benchmarking
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Thread {_id} failed with exception: {e.Message} {e.StackTrace}");
+                        Console.WriteLine($"Thread {_id} failed with exception, last execution " +
+                                          $"{_testQueries[idx].DbObject} {_testQueries[idx].Method}");
+                        Console.WriteLine($"{e.Message} {e.StackTrace}");
                         throw;
                     }
                     finally
